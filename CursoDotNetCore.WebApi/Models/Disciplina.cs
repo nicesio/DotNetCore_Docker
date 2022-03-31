@@ -6,7 +6,7 @@ namespace CursoDotNetCore.WebApi.Models
         {
 
         }
-        public Disciplina(int id, string nome, int professorId, Professor professor)
+        public Disciplina(int id, string nome, int professorId)
         {
             this.Id = id;
             this.Nome = nome;
