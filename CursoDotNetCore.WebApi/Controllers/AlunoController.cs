@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CursoDotNetCore.WebApi.Controllers.Data;
+using CursoDotNetCore.WebApi.Data;
 using CursoDotNetCore.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,11 @@ namespace CursoDotNetCore.WebApi.Controllers
     public class AlunoController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly IRepository _repo;
 
-        public AlunoController(DataContext context)
+        public AlunoController(DataContext context, IRepository repo)
         {
+            _repo = repo;
             _context = context;
 
         }
@@ -47,9 +50,9 @@ namespace CursoDotNetCore.WebApi.Controllers
         public IActionResult Put(int id, Aluno aluno)
         {
             var alu = _context.Alunos.AsNoTracking().FirstOrDefault(a => a.Id == id);
-            if(alu == null)
+            if (alu == null)
                 return BadRequest("Aluno não encontrado");
-            
+
             _context.Update(aluno);
             _context.SaveChanges();
             return Ok(aluno);
@@ -59,7 +62,7 @@ namespace CursoDotNetCore.WebApi.Controllers
         public IActionResult Patch(int id, Aluno aluno)
         {
             var alu = _context.Alunos.AsNoTracking().FirstOrDefault(a => a.Id == id);
-            if(alu == null)
+            if (alu == null)
                 return BadRequest("Aluno não encontrado");
             _context.Update(aluno);
             _context.SaveChanges();
@@ -70,7 +73,7 @@ namespace CursoDotNetCore.WebApi.Controllers
         public IActionResult Delete(int id)
         {
             var aluno = _context.Alunos.AsNoTracking().FirstOrDefault(a => a.Id == id);
-            if(aluno == null)
+            if (aluno == null)
                 return BadRequest("Aluno não encontrado");
             _context.Remove(aluno);
             _context.SaveChanges();

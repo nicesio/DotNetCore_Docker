@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CursoDotNetCore.WebApi.Controllers.Data;
+using CursoDotNetCore.WebApi.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +31,8 @@ namespace CursoDotNetCore.WebApi
             services.AddDbContext<DataContext> (
                 context => context.UseSqlite(Configuration.GetConnectionString("default"))
             );
+
+            services.AddScoped<IRepository, Repository>();
 
             services.AddControllers();
         }
