@@ -1,5 +1,6 @@
 using System.Linq;
 using CursoDotNetCore.WebApi.Controllers.Data;
+using CursoDotNetCore.WebApi.Data;
 using CursoDotNetCore.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,22 +11,23 @@ namespace CursoDotNetCore.WebApi.Controllers
     [Route("api/controller")]
     public class ProfessorController: ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IRepository _repo;
 
-        public ProfessorController(DataContext context)
+        public ProfessorController(IRepository repo)
         {
-            _context = context;
+            _repo = repo;
 
         }
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_context.Professores);
+            var result = _repo.GetAllProfessores(true);
+            return Ok(result);
         }
         [HttpGet("byId/{id}")]
         public IActionResult GetById(int id)
         {
-            var professor = _context.Professores.FirstOrDefault(a => a.Id == id);
+            var professor = _repo.GetProfessoresById(id, true);
 
             if (professor == null)
             {
@@ -37,43 +39,58 @@ namespace CursoDotNetCore.WebApi.Controllers
         [HttpPost]
         public IActionResult Post(Professor professor)
         {
-            _context.Add(professor);
-            _context.SaveChanges();
-            return Ok(professor);
+            _repo.Add(professor);
+            if(_repo.SaveChanges())
+                return Ok(professor);
+            else
+                return BadRequest("Aluno não cadastrado");
+
+
         }
 
         [HttpPut("{id}}")]
         public IActionResult Put(int id, Professor professor)
         {
-            var alu = _context.Professores.AsNoTracking().FirstOrDefault(a => a.Id == id);
+            var alu = _repo.GetProfessoresById(id, true);
             if(alu == null)
                 return BadRequest("Professor não encontrado");
             
-            _context.Update(professor);
-            _context.SaveChanges();
-            return Ok(professor);
+            _repo.Update(professor);
+            if(_repo.SaveChanges())
+                return Ok(professor);
+            else
+                return BadRequest("Aluno não cadastrado");
+
         }
 
         [HttpPatch("{id}}")]
         public IActionResult Patch(int id, Professor professor)
         {
-            var alu = _context.Professores.AsNoTracking().FirstOrDefault(a => a.Id == id);
+            var alu = _repo.GetProfessoresById(id, true);
             if(alu == null)
                 return BadRequest("Professor não encontrado");
-            _context.Update(professor);
-            _context.SaveChanges();
-            return Ok(professor);
+            
+            _repo.Update(professor);
+            if(_repo.SaveChanges())
+                return Ok(professor);
+            else
+                return BadRequest("Aluno não cadastrado");
+
         }
 
         [HttpDelete("{id}}")]
         public IActionResult Delete(int id)
         {
-            var prof = _context.Professores.AsNoTracking().FirstOrDefault(a => a.Id == id);
+            var prof = _repo.GetProfessoresById(id, true);
             if(prof == null)
                 return BadRequest("Professor não encontrado");
-            _context.Remove(prof);
-            _context.SaveChanges();
-            return Ok();
+            
+            _repo.Delete(prof);
+            if(_repo.SaveChanges())
+                return Ok(prof);
+            else
+                return BadRequest("Aluno não cadastrado");
+
         }
     }
 }
